@@ -80,7 +80,29 @@ int fetch(Cpu* cpu) {
 
 }
 
-void execute(Cpu* cpu, int instruction) {
+void decode_execute(Cpu* cpu, int instruction) {
 
+	// Using I Type instruction as defined by the ISA
+	// Use bit masking to separate parts of the instruction
+	uint32_t opcode = instruction & 0x7f;
+
+	uint32_t rd = (instruction >> 7) & 0x1f;
+	uint32_t r1 = (instruction >> 15) & 0x1f;
+	uint32_t r2 = (instruction >> 20) & 0x1f;
+
+	switch(opcode) {
+
+		case 0x13: { // Add immediate value to register with address rd
+								 uint32_t imm = ((instruction & 0xfff00000) >> 20);
+								 cpu->registers[rd] = imm + cpu->registers[r1];
+								 break;
+							 }
+		case 0x33: { // Add numbers found in addresses r1 and r2 to rd
+								 cpu->registers[rd] = cpu->registers[r1] + cpu->registers[r2];
+								 break;
+							 }
+		default:
+							 printf("Instruction not yet implemented");
+	}
 
 }
