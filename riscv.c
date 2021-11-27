@@ -9,7 +9,7 @@ const uint32_t MEMORY_SIZE = 1 * 4;
 struct riscv {
 	uint32_t registers[32];  // 32 registers 32 bits wide
 	uint32_t program_counter;
-	uint8_t dram[4]; // Addressing memory as bytes
+	uint8_t dram[8]; // Addressing memory as bytes
 };
 
 riscv_t* initialize() {
@@ -26,10 +26,10 @@ riscv_t* initialize() {
 }
 
 void load_instruction(riscv_t* riscv, uint32_t mem_index, uint32_t instr) {
-	riscv->dram[mem_index] = instr & 0xFF;
-	riscv->dram[mem_index+1] = (instr>>8) & 0xFF;
-	riscv->dram[mem_index+2] = (instr>>16) & 0xFF;
-	riscv->dram[mem_index+3] = (instr>>24) & 0xFF;
+	riscv->dram[mem_index*4] = instr & 0xFF;
+	riscv->dram[(mem_index*4)+1] = (instr>>8) & 0xFF;
+	riscv->dram[(mem_index*4)+2] = (instr>>16) & 0xFF;
+	riscv->dram[(mem_index*4)+3] = (instr>>24) & 0xFF;
 }
 
 void load_register_value(riscv_t* riscv, uint32_t reg_index, uint32_t val) {
