@@ -17,3 +17,8 @@ https://riscv.org/technical/specifications/
 
 * ADDI
 * ADD
+
+# Wishlist
+
+* Integrate with sample program compiled with riscv toolchain
+* Compile to WebAssembly and integrate it into a web app, possibly with PrimeNG's terminal
