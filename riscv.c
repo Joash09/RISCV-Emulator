@@ -9,7 +9,6 @@ const uint32_t MEMORY_SIZE = 1 * 4;
 struct riscv {
 	uint32_t registers[32];  // 32 registers 32 bits wide
 	uint32_t program_counter;
-	uint8_t dram[8]; // Addressing memory as bytes
 };
 
 riscv_t* initialize() {
@@ -19,17 +18,10 @@ riscv_t* initialize() {
 
 	riscv->program_counter = 0;
 	riscv->registers[0] = 0;
-	riscv->registers[2] = MEMORY_SIZE;
+	riscv->registers[2] = MEMORY_SIZE; // Init dram first then get mem size?
 
 	return riscv;
 
-}
-
-void load_instruction(riscv_t* riscv, uint32_t mem_index, uint32_t instr) {
-	riscv->dram[mem_index*4] = instr & 0xFF;
-	riscv->dram[(mem_index*4)+1] = (instr>>8) & 0xFF;
-	riscv->dram[(mem_index*4)+2] = (instr>>16) & 0xFF;
-	riscv->dram[(mem_index*4)+3] = (instr>>24) & 0xFF;
 }
 
 void load_register_value(riscv_t* riscv, uint32_t reg_index, uint32_t val) {
@@ -39,16 +31,6 @@ void load_register_value(riscv_t* riscv, uint32_t reg_index, uint32_t val) {
 uint32_t read_register(riscv_t* riscv, uint32_t reg_index) {
 	return riscv->registers[reg_index];
 }
-
-uint32_t fetch(riscv_t* riscv) {
-	
-	uint32_t index = riscv->program_counter;
-	return riscv->dram[index] |
-		riscv->dram[index + 1] << 8 |
-		riscv->dram[index + 2] << 16 |
-		riscv->dram[index + 3] << 24;
-}
-
 
 void decode_execute(riscv_t* riscv, int instruction) {
 
