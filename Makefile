@@ -1,8 +1,8 @@
-CC=g++
+CC=gcc
 CFLAGS=
-OBJS=RISCV-Emulator.o 
+OBJS=main.o riscv.o
 
-main: RISCV-Emulator.cpp
+main: main.c riscv.c
 	${CC} ${CFLAGS} $? -o $@
 
 .PHONY: clean
