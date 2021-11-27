@@ -28,20 +28,25 @@ int main()
 	printf("Register 11 value: %x\n", read_register(cpu, 0xB));
 	printf("Register 12 value: %x\n", read_register(cpu, 0xC));
 	printf("Register 13 value: %x\n", read_register(cpu, 0xD));
+	printf("Register 14 value: %x\n", read_register(cpu, 0xE));
+	printf("Register 15 value: %x\n", read_register(cpu, 0xF));
 	
-	// Initialize Load Instructions
-	load_instruction(dram, 0, 0x00B50633); // Add r10 and r11 -> r12
-	load_instruction(dram, 1, 0x81C50693); // Add 2076 to r10 -> r13
+	// Load Instructions
+	const NUM_INSTRUCTIONS = 4; // For testing 
+	store_word(dram, 0, 0x00B50633); // Add r10 and r11 -> r12
+	store_word(dram, 1, 0x81C50693); // Add 2076 to r10 -> r13
+	store_word(dram, 2, 0x52703); // Load word at DRAM address 0x1 into r14
+	store_word(dram, 3, 0x52783); // Load half word at DRAM addr 0x1 into r15
 
 	// FETCH, DECODE, EXECUTE cycle
-	while(fetch_pc(cpu) < 8){
+	while(fetch_pc(cpu) < NUM_INSTRUCTIONS*4){
 
 		// FETCH
-		uint32_t instruction = fetch_instruction(dram, fetch_pc(cpu));
+		uint32_t instruction = load_word(dram, fetch_pc(cpu));
 		printf("Executing instruction: %x\n", instruction);
 
 		// Decode and execute
-		decode_execute(cpu, instruction);
+		decode_execute(cpu, dram, instruction);
 
 		// Jump to next instruction. 32 bits = 4 bytes
 		increment_pc(cpu);
@@ -50,7 +55,9 @@ int main()
 
 	printf("Register 12 value: %d\n", read_register(cpu, 0xC));
 	printf("Register 13 value: %d\n", read_register(cpu, 0xD));
-
+	printf("Register 14 value: %x\n", read_register(cpu, 0xE));
+	printf("Register 15 value: %x\n", read_register(cpu, 0xF));
+	
 	delete_riscv(cpu);
 	delete_dram(dram);
 
