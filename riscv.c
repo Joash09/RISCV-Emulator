@@ -38,13 +38,13 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 
 	// Using R type instruction as defined by the ISA
 	// Use bit masking to separate parts of the instruction
-	uint32_t opcode = instruction & 0x7f;
+	uint32_t op_code = instruction & 0x7f;
 	uint32_t rd = (instruction >> 7) & 0x1f;
-	uint32_t fn3 = (instruction >> 12) & 0x3;
+	uint32_t fn3 = (instruction >> 12) & 0x7;
 	uint32_t r1 = (instruction >> 15) & 0x1f;
 	uint32_t r2 = (instruction >> 20) & 0x1f;
 
-	switch(opcode) {
+	switch(op_code) {
 
 		case 0x03: { // Load instructions 
 								 uint32_t imm = ((instruction & 0xfff00000) >> 20);
@@ -55,18 +55,42 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 															 riscv->registers[rd] = load_byte(dram, addr);
 															 break;
 														 }
-										case 0x1: { // Load half word
-																riscv->registers[rd] = load_half_word(dram, addr);
-																break;
-															}
-										case 0x2: { // Load word
-																riscv->registers[rd] = load_word(dram, addr);
-																break;
-															}
-										default:
-															printf("Instruction not yet implemented");
+									 case 0x1: { // Load half word
+															 riscv->registers[rd] = load_half_word(dram, addr);
+															 break;
+														 }
+									 case 0x2: { // Load word
+															 riscv->registers[rd] = load_word(dram, addr);
+															 break;
+														 }
+									 default:
+														 printf("Instruction not yet implemented\n");
+														 break;
 								 }
+								 break;
 
+							 }
+		case 0x23: { // Store instructions
+								 uint32_t imm = ((instruction & 0xfff00000)>>12) | rd;
+
+								 switch(fn3) {
+									 case 0x0: { // Store byte
+															 store_byte(dram, imm, r2);
+															 break;
+														 }
+									 case 0x1: { // Store half word
+															 store_half_word(dram, imm, r2);
+															 break;
+														 }
+									 case 0x2: { // Store word
+															 store_word(dram, imm, r2);
+															 break;
+														 }
+									 default: 
+														 printf("Instruction not yet implemented\n");
+														 break;
+								 }
+								 break;
 							 }
 		case 0x13: { // Add immediate value to register with address rd
 								 uint32_t imm = ((instruction & 0xfff00000) >> 20);
@@ -78,7 +102,8 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 								 break;
 							 }
 		default:
-							 printf("Instruction not yet implemented");
+							 printf("Instruction not yet implemented\n");
+							 break;
 	}
 
 }

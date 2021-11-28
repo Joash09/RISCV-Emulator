@@ -10,8 +10,7 @@ https://riscv.org/technical/specifications/
 ## Some general notes
 
 * Program emulates base RV32I ISA
-* This has 4 core instruction formats, namely; R, I, S and U
-
+* So far I thought is was a bit unnecessary to emulate some sort of bus interface between the processor and memory
 * No overflow checks are made on arithemtic instructions as this can be accomplished in software using branch instructions
 
 ## Instructions Implemented
@@ -19,6 +18,7 @@ https://riscv.org/technical/specifications/
 * ADDI
 * ADD
 * LW (Load word), LH (Load half word), LB (Load byte)
+* SW (Store word), SH (Store half word), SB (Store byte)
 
 # Wishlist
 

@@ -20,7 +20,7 @@ int main()
 	dram_t* dram;
 	dram = initialize_dram();
 
-	// Load registers
+	// Load registers (for testing)
 	load_register_value(cpu, 0xA, 5);
 	load_register_value(cpu, 0xB, 3);
 	
@@ -32,12 +32,13 @@ int main()
 	printf("Register 15 value: %x\n", read_register(cpu, 0xF));
 	
 	// Load Instructions
-	const NUM_INSTRUCTIONS = 4; // For testing 
-	store_word(dram, 0, 0x00B50633); // Add r10 and r11 -> r12
-	store_word(dram, 1, 0x81C50693); // Add 2076 to r10 -> r13
-	store_word(dram, 2, 0x52703); // Load word at DRAM address 0x1 into r14
-	store_word(dram, 3, 0x52783); // Load half word at DRAM addr 0x1 into r15
-
+	const int NUM_INSTRUCTIONS = 5; // For testing 
+	store_word(dram, 0x0, 0x00B50633); // Add r10 and r11 -> r12
+	store_word(dram, 0x4, 0x81C50693); // Add 2076 to r10 -> r13
+	store_word(dram, 0x8, 0x2703); // Load word at DRAM address 0x0 into r14
+	store_word(dram, 0xC, 0x1783); // Load half word at DRAM addr 0x0 into r15
+	store_word(dram, 0x10, 0x0);
+	
 	// FETCH, DECODE, EXECUTE cycle
 	while(fetch_pc(cpu) < NUM_INSTRUCTIONS*4){
 
