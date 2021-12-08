@@ -20,6 +20,13 @@ https://riscv.org/technical/specifications/
 * LW (Load word), LH (Load half word), LB (Load byte)
 * SW (Store word), SH (Store half word), SB (Store byte)
 
+## Examples of Encoded Instructions
+
+0x00B50633 // Add r10 and r11 -> r12
+0x81C50693 // Add 2076 to r10 -> r13
+0x2703 // Load word at DRAM address 0x0 into r14
+0x1783 // Load half word at DRAM addr 0x0 into r15
+
 # Wishlist
 
 * Integrate with sample program compiled with riscv toolchain

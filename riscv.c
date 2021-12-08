@@ -5,11 +5,13 @@
 #include "stdlib.h"
 #include "stdio.h"
 
+#define REGISTERS 32
+
 const uint32_t NUM_INSTRUCTIONS = 1;
 const uint32_t MEMORY_SIZE = 1 * 4;
 
 struct riscv {
-	uint32_t registers[32];  // 32 registers 32 bits wide
+	uint32_t registers[REGISTERS];  // 32 registers 32 bits wide
 	uint32_t program_counter;
 };
 
@@ -114,6 +116,13 @@ uint32_t fetch_pc(riscv_t* riscv) {
 
 void increment_pc(riscv_t* riscv) {
 	riscv->program_counter = riscv->program_counter + 4;
+}
+
+void print_registers(riscv_t* riscv) {
+
+	for(int i = 0; i < REGISTERS/2; i++) {
+		printf("Register %d:\t%x\tRegister %d:\t%x\n", i, riscv->registers[i], i+(REGISTERS/2), riscv->registers[i+(REGISTERS/2)]);
+	}
 }
 
 void delete_riscv(riscv_t* riscv) {

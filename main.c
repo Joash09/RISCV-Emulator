@@ -8,6 +8,8 @@
 #include "riscv.h"
 #include "dram.h"
 
+void print_help();
+
 int main()
 {
 	printf("Welcome to my RISCV emulator\n");
@@ -19,28 +21,41 @@ int main()
 	// Initialize Memory
 	dram_t* dram;
 	dram = initialize_dram();
+	int32_t instruction_counter = 0;
 
-	// Load registers (for testing)
-	load_register_value(cpu, 0xA, 5);
-	load_register_value(cpu, 0xB, 3);
-	
-	printf("Register 10 value: %x\n", read_register(cpu, 0xA));
-	printf("Register 11 value: %x\n", read_register(cpu, 0xB));
-	printf("Register 12 value: %x\n", read_register(cpu, 0xC));
-	printf("Register 13 value: %x\n", read_register(cpu, 0xD));
-	printf("Register 14 value: %x\n", read_register(cpu, 0xE));
-	printf("Register 15 value: %x\n", read_register(cpu, 0xF));
-	
-	// Load Instructions
-	const int NUM_INSTRUCTIONS = 5; // For testing 
-	store_word(dram, 0x0, 0x00B50633); // Add r10 and r11 -> r12
-	store_word(dram, 0x4, 0x81C50693); // Add 2076 to r10 -> r13
-	store_word(dram, 0x8, 0x2703); // Load word at DRAM address 0x0 into r14
-	store_word(dram, 0xC, 0x1783); // Load half word at DRAM addr 0x0 into r15
-	store_word(dram, 0x10, 0x0);
-	
+	print_help();
+	char input;
+	scanf(" %c", &input);
+	while(input != 'q') {
+
+		switch(input) {
+			case 'p': // Print register table
+				print_registers(cpu);
+				break;
+			case 'r': ; // Manually load register value
+				int32_t reg_addr, value;
+				printf("Enter register address:\t");
+				scanf("%x", &reg_addr);
+				printf("Enter register value:\t");
+				scanf("%x", &value);
+				load_register_value(cpu, reg_addr, value);
+				break;
+			case 'c': ;
+				int32_t dram_instruction;
+				scanf(" %x", &dram_instruction);
+				store_word(dram, instruction_counter, dram_instruction);
+				instruction_counter += 4;
+				break;
+			default:
+				printf("Unknown option");
+
+		}
+		print_help();
+		scanf(" %c", &input);
+	}
+
 	// FETCH, DECODE, EXECUTE cycle
-	while(fetch_pc(cpu) < NUM_INSTRUCTIONS*4){
+	while(fetch_pc(cpu) < instruction_counter/4){ // Each instruction is 4 bytes long
 
 		// FETCH
 		uint32_t instruction = load_word(dram, fetch_pc(cpu));
@@ -54,14 +69,19 @@ int main()
 
 	}
 
-	printf("Register 12 value: %d\n", read_register(cpu, 0xC));
-	printf("Register 13 value: %d\n", read_register(cpu, 0xD));
-	printf("Register 14 value: %x\n", read_register(cpu, 0xE));
-	printf("Register 15 value: %x\n", read_register(cpu, 0xF));
-	
+	print_registers(cpu);
+
 	delete_riscv(cpu);
 	delete_dram(dram);
 
 	return 0;
+}
+
+void print_help() {
+
+	printf("\n");
+	printf("p.\tPrint Registers\t\tr.\tLoad Register\n");
+	printf("c.\tCreate Instruction\te.\tExecute Instruction\n");
+	printf("l.\tLoad Program\t\tq.\tQuit\n");
 }
 

@@ -1,10 +1,16 @@
 CC=gcc
-CFLAGS=-g
-OBJS=main.o riscv.o dram.o
+FLAGS=
+LDFLAGS=
 
-main: main.c riscv.c dram.c
-	${CC} ${CFLAGS} $? -o $@
+SOURCES=dram.c riscv.c main.c
+OBJS=$(SOURCES:.c=.o)
+TARGET=main
+
+
+$(TARGET): $(OBJS)
+	$(CC) $(FLAGS) -o $@ $^ $(LDFLAGS)
+
 
 .PHONY: clean
 clean:
-	rm main
+	@em $(TARGET) $(OBJS)
