@@ -6,9 +6,7 @@
 #include "stdio.h"
 
 #define REGISTERS 32
-
-const uint32_t NUM_INSTRUCTIONS = 1;
-const uint32_t MEMORY_SIZE = 1 * 4;
+#define MEMORY_SIZE 1080*1080*128 // 128MiB
 
 struct riscv {
 	uint32_t registers[REGISTERS];  // 32 registers 32 bits wide
@@ -97,23 +95,23 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 			   }
 		case 0x13: { // Immediate instructions
 
-				   uint32_t imm = ((instruction & 0xfff00000) >> 20);
+				   int32_t imm = ((instruction & 0xfff00000) >> 20);
 				   switch(fn3) {
 					   case 0x0: { // ADDI
-							     riscv->registers[rd] = imm + riscv->registers[r1];
+							     riscv->registers[rd] = (uint32_t) (imm + (int32_t) riscv->registers[r1]);
 							     break;
 						     }
 					   case 0x4: { // XORI
-							     riscv->registers[rd] = imm ^ riscv->registers[r1];
+							     riscv->registers[rd] = (uint32_t) (imm ^ (int32_t) riscv->registers[r1]);
 							     break;
 						     }
 					   case 0x6: { // ORI
-							     riscv->registers[rd] = imm | riscv->registers[r1];
+							     riscv->registers[rd] = (uint32_t) (imm | (int32_t) riscv->registers[r1]);
 							     break;
 
 						     }
 					   case 0x7: { // ANDI
-							     riscv->registers[rd] = imm & riscv->registers[r1];
+							     riscv->registers[rd] = (uint32_t) (imm & (int32_t) riscv->registers[r1]);
 							     break;
 						     }
 				   }
@@ -149,9 +147,65 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 					   ((instruction>>21) & 0x8) << 12 |
 					   ((instruction>>20) & 0x1) << 11 | 
 					   ((instruction>>21) & 0xA);
-				   riscv->increment_pc();
-				   int32_t pc_signed = (int32_t) riscv->fetch_pc;
-				   riscv->registers[rd] = (uint32_t) (pc_signed + imm);
+				   int32_t pc_signed = (int32_t) riscv->program_counter;
+				   riscv->registers[rd] = (uint32_t) (pc_signed + imm - 4);
+				   break;
+			   }
+		case 0x63: { // Branch instructions
+				   // Typically sign extended. Converted to unsigned for specific instructions
+				   // 4 bytes are substracted as the they will added back with the usual program counter increment
+				   // at the end of each instruction cycle
+				   int32_t imm = 
+					   ((instruction>>31) & 0x1) << 12 |
+					   ((instruction>>7)  & 0x1) << 11 |
+					   ((instruction>>25) & 0x3F) << 10 |
+					   ((instruction>>8) & 0xF);
+
+				   switch(fn3) {
+
+					   case 0x0: { // BE
+							     if (riscv->registers[r1] == riscv->registers[r2]) {
+								int32_t pc_offset = (int32_t) riscv->program_counter + imm - 4;
+								riscv->program_counter = (uint32_t) pc_offset; 
+							     }
+							     break;
+						     }
+					   case 0x1: { // BNE
+							     if (riscv->registers[r1] != riscv->registers[r2]) {
+								int32_t pc_offset = (int32_t) riscv->program_counter + imm - 4;
+								riscv->program_counter = (uint32_t) pc_offset; 
+							     }
+							     break;
+						     }
+					   case 0x4: { // BLT
+							     if (riscv->registers[r1] < riscv->registers[r2]) {
+								int32_t pc_offset = (int32_t) riscv->program_counter + imm - 4;
+								riscv->program_counter = (uint32_t) pc_offset; 
+							     }
+							     break;
+						     }
+					   case 0x7: { // BGT
+							     if (riscv->registers[r1] > riscv->registers[r2]) {
+								int32_t pc_offset = (int32_t) riscv->program_counter + imm - 4;
+								riscv->program_counter = (uint32_t) pc_offset; 
+							     }
+							     break;
+						     }
+					   case 0x8: { // BLTU
+							     if (riscv->registers[r1] < riscv->registers[r2]) {
+								uint32_t offset = (uint32_t) (imm - 4);
+								riscv->program_counter = riscv->program_counter + offset;
+							     }
+							     break;
+						     }
+					   case 0x9: { // BGEU
+							     if (riscv->registers[r1] > riscv->registers[r2]) {
+								uint32_t offset = (uint32_t) (imm - 4);
+								riscv->program_counter = riscv->program_counter + offset;
+							     }
+							     break;
+						     }
+				   }
 				   break;
 			   }
 		default:
@@ -171,6 +225,7 @@ void increment_pc(riscv_t* riscv) {
 
 void print_registers(riscv_t* riscv) {
 
+	printf("Program Counter:\t%x\n", riscv->program_counter);
 	for(int i = 0; i < REGISTERS/2; i++) {
 		printf("Register %d:\t%x\tRegister %d:\t%x\n", i, riscv->registers[i], i+(REGISTERS/2), riscv->registers[i+(REGISTERS/2)]);
 	}

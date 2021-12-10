@@ -25,6 +25,7 @@ https://github.com/riscv-collab/riscv-gnu-toolchain
 * LW (Load word), LH (Load half word), LB (Load byte)
 * SW (Store word), SH (Store half word), SB (Store byte)
 * JAL (Jump and Link)
+* BEQ, BNE, BLT, BGE, BLTU, BGEU
 
 ## Examples of Encoded Instructions
 

@@ -21,7 +21,7 @@ int main()
 	// Initialize Memory
 	dram_t* dram;
 	dram = initialize_dram();
-	int32_t instruction_counter = 0;
+	int32_t memory_byte_counter = 0;
 
 	print_help();
 	char input;
@@ -43,8 +43,8 @@ int main()
 			case 'c': ;
 				int32_t dram_instruction;
 				scanf(" %x", &dram_instruction);
-				store_word(dram, instruction_counter, dram_instruction);
-				instruction_counter += 4;
+				store_word(dram, memory_byte_counter, dram_instruction);
+				memory_byte_counter += 4;
 				break;
 			default:
 				printf("Unknown option");
@@ -55,7 +55,7 @@ int main()
 	}
 
 	// FETCH, DECODE, EXECUTE cycle
-	while(fetch_pc(cpu) < instruction_counter/4){ // Each instruction is 4 bytes long
+	while(fetch_pc(cpu) < memory_byte_counter/4){ // Each instruction is 4 bytes long
 
 		// FETCH
 		uint32_t instruction = load_word(dram, fetch_pc(cpu));
@@ -81,7 +81,7 @@ void print_help() {
 
 	printf("\n");
 	printf("p.\tPrint Registers\t\tr.\tLoad Register\n");
-	printf("c.\tCreate Instruction\te.\tExecute Instruction\n");
+	printf("c.\tCreate Instruction\te.\tExecute Program\n");
 	printf("l.\tLoad Program\t\tq.\tQuit\n");
 }
 
