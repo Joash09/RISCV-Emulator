@@ -15,8 +15,8 @@ https://riscv.org/technical/specifications/
 
 ## Instructions Implemented
 
-* ADDI
-* ADD
+* ADDI, XORI, ORI, ANDI
+* ADD, XOR, OR, AND
 * LW (Load word), LH (Load half word), LB (Load byte)
 * SW (Store word), SH (Store half word), SB (Store byte)
 

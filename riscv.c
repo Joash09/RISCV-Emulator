@@ -49,63 +49,102 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 	switch(op_code) {
 
 		case 0x03: { // Load instructions 
-								 uint32_t imm = ((instruction & 0xfff00000) >> 20);
-								 uint32_t addr = r1 + imm;
+				   uint32_t imm = ((instruction & 0xfff00000) >> 20);
+				   uint32_t addr = r1 + imm;
 
-								 switch(fn3) {
-									 case 0x0: { // Load byte
-															 riscv->registers[rd] = load_byte(dram, addr);
-															 break;
-														 }
-									 case 0x1: { // Load half word
-															 riscv->registers[rd] = load_half_word(dram, addr);
-															 break;
-														 }
-									 case 0x2: { // Load word
-															 riscv->registers[rd] = load_word(dram, addr);
-															 break;
-														 }
-									 default:
-														 printf("Instruction not yet implemented\n");
-														 break;
-								 }
-								 break;
+				   switch(fn3) {
+					   case 0x0: { // Load byte
+							     riscv->registers[rd] = load_byte(dram, addr);
+							     break;
+						     }
+					   case 0x1: { // Load half word
+							     riscv->registers[rd] = load_half_word(dram, addr);
+							     break;
+						     }
+					   case 0x2: { // Load word
+							     riscv->registers[rd] = load_word(dram, addr);
+							     break;
+						     }
 
-							 }
+					   default:
+						     printf("Instruction not yet implemented\n");
+						     break;
+				   }
+				   break;
+
+			   }
 		case 0x23: { // Store instructions
-								 uint32_t imm = ((instruction & 0xfff00000)>>12) | rd;
+				   uint32_t imm = ((instruction & 0xfff00000)>>12) | rd;
 
-								 switch(fn3) {
-									 case 0x0: { // Store byte
-															 store_byte(dram, imm, r2);
-															 break;
-														 }
-									 case 0x1: { // Store half word
-															 store_half_word(dram, imm, r2);
-															 break;
-														 }
-									 case 0x2: { // Store word
-															 store_word(dram, imm, r2);
-															 break;
-														 }
-									 default: 
-														 printf("Instruction not yet implemented\n");
-														 break;
-								 }
-								 break;
-							 }
-		case 0x13: { // Add immediate value to register with address rd
-								 uint32_t imm = ((instruction & 0xfff00000) >> 20);
-								 riscv->registers[rd] = imm + riscv->registers[r1];
-								 break;
-							 }
-		case 0x33: { // Add numbers found in addresses r1 and r2 to rd
-								 riscv->registers[rd] = riscv->registers[r1] + riscv->registers[r2];
-								 break;
-							 }
+				   switch(fn3) {
+					   case 0x0: { // Store byte
+							     store_byte(dram, imm, r2);
+							     break;
+						     }
+					   case 0x1: { // Store half word
+							     store_half_word(dram, imm, r2);
+							     break;
+						     }
+					   case 0x2: { // Store word
+							     store_word(dram, imm, r2);
+							     break;
+						     }
+					   default: 
+						     printf("Instruction not yet implemented\n");
+						     break;
+				   }
+				   break;
+			   }
+		case 0x13: { // Immediate instructions
+
+				   uint32_t imm = ((instruction & 0xfff00000) >> 20);
+				   switch(fn3) {
+					   case 0x0: { // ADDI
+							     riscv->registers[rd] = imm + riscv->registers[r1];
+							     break;
+						     }
+					   case 0x4: { // XORI
+							     riscv->registers[rd] = imm ^ riscv->registers[r1];
+							     break;
+						     }
+					   case 0x6: { // ORI
+							     riscv->registers[rd] = imm | riscv->registers[r1];
+							     break;
+
+						     }
+					   case 0x7: { // ANDI
+							     riscv->registers[rd] = imm & riscv->registers[r1];
+							     break;
+						     }
+				   }
+				   break;
+			   }
+		case 0x33: { // Perform operation on two registers and store value in rd
+
+				   switch(fn3) {
+
+					   case 0x0: { // ADD
+							riscv->registers[rd] = riscv->registers[r1] + riscv->registers[r2];
+							break;
+						     }
+					   case 0x4: { // XOR
+							riscv->registers[rd] = riscv->registers[r1] ^ riscv->registers[r2];
+							break;
+						     }
+					   case 0x6: { // OR
+							riscv->registers[rd] = riscv->registers[r1] | riscv->registers[r2];
+							break;
+						     }
+					   case 0x7: {	// AND
+							riscv->registers[rd] = riscv->registers[r1] & riscv->registers[r2];
+							break;
+						     }
+				   }
+				   break;
+			   }
 		default:
-							 printf("Instruction not yet implemented\n");
-							 break;
+			   printf("Instruction not yet implemented\n");
+			   break;
 	}
 
 }
