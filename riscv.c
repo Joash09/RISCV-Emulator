@@ -142,6 +142,18 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 				   }
 				   break;
 			   }
+		case 0x6F: { // JAL
+				   // Immediate is sign extened
+				   int32_t imm = 
+					   ((instruction>>31) & 0x1) << 20 |
+					   ((instruction>>21) & 0x8) << 12 |
+					   ((instruction>>20) & 0x1) << 11 | 
+					   ((instruction>>21) & 0xA);
+				   riscv->increment_pc();
+				   int32_t pc_signed = (int32_t) riscv->fetch_pc;
+				   riscv->registers[rd] = (uint32_t) (pc_signed + imm);
+				   break;
+			   }
 		default:
 			   printf("Instruction not yet implemented\n");
 			   break;
