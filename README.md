@@ -1,11 +1,16 @@
 # RISCV-Emulator
 
-When first Googling "RISC-V emulator," it was this project that inspired me to try make my own.
+When first Googling "RISC-V emulator," it was this project that inspired me to try make my own: 
 https://book.rvemu.app/hardware-components/01-cpu.html
 
 Everything you need to know on how the RISC-V core works is found here:
-https://riscv.org/wp-content/uploads/2017/05/riscv-spec-v2.2.pdf
 https://riscv.org/technical/specifications/
+
+A prebuilt RISC-V toolchain can be found here (Ubuntu 20.04 x86):
+https://github.com/stnolting/riscv-gcc-prebuilt
+
+Alternatively you can build your own toolchain from source (takes some time):
+https://github.com/riscv-collab/riscv-gnu-toolchain
 
 ## Some general notes
 
