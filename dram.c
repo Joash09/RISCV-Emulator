@@ -1,9 +1,13 @@
 #include "dram.h"
-#include "stdint.h"
-#include "stdlib.h"
+
+#include<stdio.h>
+#include<stdint.h>
+#include<stdlib.h>
+
+#define MEMORY_SIZE 1080*1080*128 // 128MiB
 
 struct dram {
-	uint8_t memory[100];
+	uint8_t memory[MEMORY_SIZE];
 };
 
 dram_t* initialize_dram() {
@@ -40,6 +44,30 @@ uint32_t load_half_word(dram_t* dram, uint32_t start_addr) {
 
 uint32_t load_byte(dram_t* dram, uint32_t start_addr) {
 	return dram->memory[start_addr];
+}
+
+int load_program(dram_t* dram, char* filename) {
+
+	// Open file
+	FILE* file = fopen(filename, "r");
+	if (file == NULL) {
+		perror("Cannot open program file\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// For each byte in file store byte in memory
+	char program_byte;
+	int memory_counter = 0;
+	while((program_byte = fgetc(file) != EOF)) {
+		dram->memory[memory_counter] = program_byte;
+		memory_counter++;
+	}
+	
+	// Close file
+	fclose(file);
+
+	return memory_counter;
+
 }
 
 void delete_dram(dram_t* dram) {

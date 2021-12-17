@@ -9,6 +9,7 @@
 #include "dram.h"
 
 void print_help();
+void print_debug_help();
 
 int main()
 {
@@ -29,23 +30,41 @@ int main()
 	while(input != 'q') {
 
 		switch(input) {
+			
 			case 'p': // Print register table
 				print_registers(cpu);
 				break;
-			case 'r': ; // Manually load register value
-				int32_t reg_addr, value;
-				printf("Enter register address:\t");
-				scanf("%x", &reg_addr);
-				printf("Enter register value:\t");
-				scanf("%x", &value);
-				load_register_value(cpu, reg_addr, value);
+			
+			case 'l': ; // Load Program
+				char filename[50];
+				printf("Enter filename for the binary (.bin) program:\t");
+				scanf("%s", filename);
+				int num_bytes_loaded = load_program(dram, filename);
+				printf("%d bytes loaded\n", num_bytes_loaded);
 				break;
-			case 'c': ;
-				int32_t dram_instruction;
-				scanf(" %x", &dram_instruction);
-				store_word(dram, memory_byte_counter, dram_instruction);
-				memory_byte_counter += 4;
+			
+			case 'd': ; // Debug menu
+				print_debug_help();
+				char debug_input;
+				scanf(" %c", &debug_input);
+				switch(debug_input) {
+					case 'r': ; // Manually load register value
+										int32_t reg_addr, value;
+										printf("Enter register address:\t");
+										scanf("%x", &reg_addr);
+										printf("Enter register value:\t");
+										scanf("%x", &value);
+										load_register_value(cpu, reg_addr, value);
+										break;
+					case 'c': ;
+										int32_t dram_instruction;
+										scanf(" %x", &dram_instruction);
+										store_word(dram, memory_byte_counter, dram_instruction);
+										memory_byte_counter += 4;
+										break;
+				}
 				break;
+			
 			default:
 				printf("Unknown option");
 
@@ -80,8 +99,14 @@ int main()
 void print_help() {
 
 	printf("\n");
-	printf("p.\tPrint Registers\t\tr.\tLoad Register\n");
-	printf("c.\tCreate Instruction\te.\tExecute Program\n");
-	printf("l.\tLoad Program\t\tq.\tQuit\n");
+	printf("l.\tLoad Program\t\te.\tExecute Program\n");
+	printf("p.\tPrint Registers\t\td.\tDebug\n");
+	printf("q.\tQuit\n");
+
 }
 
+void print_debug_help() {
+	printf("\n");
+	printf("r.\tLoad Register\tc.\tCreate Instruction\n");
+
+}
