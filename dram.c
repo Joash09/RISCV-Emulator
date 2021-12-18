@@ -49,18 +49,21 @@ uint32_t load_byte(dram_t* dram, uint32_t start_addr) {
 int load_program(dram_t* dram, char* filename) {
 
 	// Open file
-	FILE* file = fopen(filename, "r");
+	FILE* file = fopen(filename, "rb");
 	if (file == NULL) {
 		perror("Cannot open program file\n");
 		exit(EXIT_FAILURE);
 	}
 
 	// For each byte in file store byte in memory
-	char program_byte;
+	char program_byte = fgetc(file);
 	int memory_counter = 0;
-	while((program_byte = fgetc(file) != EOF)) {
+	while(program_byte != EOF) {
+
+		printf("%x\n", program_byte);
 		dram->memory[memory_counter] = program_byte;
 		memory_counter++;
+		program_byte = fgetc(file);
 	}
 	
 	// Close file

@@ -223,6 +223,10 @@ void increment_pc(riscv_t* riscv) {
 	riscv->program_counter = riscv->program_counter + 4;
 }
 
+void reset_pc(riscv_t* riscv) {
+	riscv->program_counter = 0x0;
+}
+
 void print_registers(riscv_t* riscv) {
 
 	printf("Program Counter:\t%x\n", riscv->program_counter);

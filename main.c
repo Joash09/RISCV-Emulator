@@ -8,6 +8,8 @@
 #include "riscv.h"
 #include "dram.h"
 
+#define MEMORY_SIZE 1080*1080*128 // 128MiB
+
 void print_help();
 void print_debug_help();
 
@@ -42,7 +44,42 @@ int main()
 				int num_bytes_loaded = load_program(dram, filename);
 				printf("%d bytes loaded\n", num_bytes_loaded);
 				break;
-			
+
+			case 'e': ; // Execute one line of the program
+
+								// FETCH
+								uint32_t instruction = load_word(dram, fetch_pc(cpu));
+								printf("Executing instruction: %x at %x\n", instruction, fetch_pc(cpu));
+
+								// Decode and execute
+								decode_execute(cpu, dram, instruction);
+
+								// Jump to next instruction. 32 bits = 4 bytes
+								increment_pc(cpu);		
+								break;
+
+			case 'r': ; // Run loaded program
+
+								// Reset CPU program counter
+								reset_pc(cpu);
+
+								// FETCH, DECODE, EXECUTE cycle
+								while(fetch_pc(cpu) < MEMORY_SIZE/4){ // Each instruction is 4 bytes long
+
+									// FETCH
+									uint32_t instruction = load_word(dram, fetch_pc(cpu));
+									printf("Program Counter: %x\n", fetch_pc(cpu));
+									printf("Executing instruction: %x\n", instruction);
+
+									// Decode and execute
+									decode_execute(cpu, dram, instruction);
+
+									// Jump to next instruction. 32 bits = 4 bytes
+									increment_pc(cpu);
+
+								}							
+								break;
+
 			case 'd': ; // Debug menu
 				print_debug_help();
 				char debug_input;
@@ -73,23 +110,7 @@ int main()
 		scanf(" %c", &input);
 	}
 
-	// FETCH, DECODE, EXECUTE cycle
-	while(fetch_pc(cpu) < memory_byte_counter/4){ // Each instruction is 4 bytes long
-
-		// FETCH
-		uint32_t instruction = load_word(dram, fetch_pc(cpu));
-		printf("Executing instruction: %x\n", instruction);
-
-		// Decode and execute
-		decode_execute(cpu, dram, instruction);
-
-		// Jump to next instruction. 32 bits = 4 bytes
-		increment_pc(cpu);
-
-	}
-
-	print_registers(cpu);
-
+	// Clean up memory
 	delete_riscv(cpu);
 	delete_dram(dram);
 
@@ -97,16 +118,14 @@ int main()
 }
 
 void print_help() {
-
 	printf("\n");
-	printf("l.\tLoad Program\t\te.\tExecute Program\n");
-	printf("p.\tPrint Registers\t\td.\tDebug\n");
-	printf("q.\tQuit\n");
+	printf("l.\tLoad Program\t\te.\tExecute First Instruction\n");
+	printf("r.\tRun Program\t\td.\tDebug\n");
+	printf("p.\tPrint Registers\t\tq.\tQuit\n");
 
 }
 
 void print_debug_help() {
 	printf("\n");
 	printf("r.\tLoad Register\tc.\tCreate Instruction\n");
-
 }

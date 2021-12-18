@@ -15,6 +15,7 @@ void decode_execute(riscv_t* cpu, dram_t* dram, int instruction);
 
 uint32_t fetch_pc(riscv_t* riscv);
 void increment_pc(riscv_t* riscv);
+void reset_pc(riscv_t* riscv);
 
 void print_registers(riscv_t* riscv);
 
