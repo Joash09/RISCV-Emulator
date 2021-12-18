@@ -45,18 +45,6 @@ int main()
 				printf("%d bytes loaded\n", num_bytes_loaded);
 				break;
 
-			case 'e': ; // Execute one line of the program
-
-								// FETCH
-								uint32_t instruction = load_word(dram, fetch_pc(cpu));
-								printf("Executing instruction: %x at %x\n", instruction, fetch_pc(cpu));
-
-								// Decode and execute
-								decode_execute(cpu, dram, instruction);
-
-								// Jump to next instruction. 32 bits = 4 bytes
-								increment_pc(cpu);		
-								break;
 
 			case 'r': ; // Run loaded program
 
@@ -95,9 +83,23 @@ int main()
 										break;
 					case 'c': ;
 										int32_t dram_instruction;
+										printf("Enter instruction:\t");
 										scanf(" %x", &dram_instruction);
 										store_word(dram, memory_byte_counter, dram_instruction);
 										memory_byte_counter += 4;
+
+										// Execute one line of the program
+										// FETCH
+										uint32_t instruction = load_word(dram, fetch_pc(cpu));
+										printf("Executing instruction: %x at %x\n", instruction, fetch_pc(cpu));
+
+										// Decode and execute
+										decode_execute(cpu, dram, instruction);
+
+										// Jump to next instruction. 32 bits = 4 bytes
+										increment_pc(cpu);		
+
+										print_registers(cpu);
 										break;
 				}
 				break;
@@ -119,13 +121,13 @@ int main()
 
 void print_help() {
 	printf("\n");
-	printf("l.\tLoad Program\t\te.\tExecute First Instruction\n");
-	printf("r.\tRun Program\t\td.\tDebug\n");
-	printf("p.\tPrint Registers\t\tq.\tQuit\n");
+	printf("l.\tLoad Program\t\tr.\tRun Program\n");
+	printf("p.\tPrint Registers\t\td.\tDebug\n");
+	printf("q.\tQuit\n");
 
 }
 
 void print_debug_help() {
 	printf("\n");
-	printf("r.\tLoad Register\tc.\tCreate Instruction\n");
+	printf("r.\tLoad Register\tc.\tCreate and Execute Instruction\n");
 }

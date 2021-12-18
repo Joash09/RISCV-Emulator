@@ -13,4 +13,4 @@ $(TARGET): $(OBJS)
 
 .PHONY: clean
 clean:
-	@em $(TARGET) $(OBJS)
+	@rm $(TARGET) $(OBJS)
