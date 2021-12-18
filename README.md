@@ -26,6 +26,7 @@ https://github.com/riscv-collab/riscv-gnu-toolchain
 * SW (Store word), SH (Store half word), SB (Store byte)
 * JAL (Jump and Link)
 * BEQ, BNE, BLT, BGE, BLTU, BGEU
+* LUI (Load upper immediate)
 
 ## Examples of Encoded Instructions
 
@@ -36,6 +37,10 @@ https://github.com/riscv-collab/riscv-gnu-toolchain
 0x2703 // Load word at DRAM address 0x0 into r14
 
 0x1783 // Load half word at DRAM addr 0x0 into r15
+
+0xA58C63 // Add 0xC to program counter if r10 == r11 (BEQ)
+
+0x357B7 // Load Upper Immediate 0x35 to upper 20 bits of r15
 
 # Wishlist
 

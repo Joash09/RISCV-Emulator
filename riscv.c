@@ -46,6 +46,11 @@ void decode_execute(riscv_t* riscv, dram_t* dram, int instruction) {
 
 	switch(op_code) {
 
+		case 0x37: { // LUI
+								 uint32_t imm = ((instruction >> 12) & 0xFFFFF);
+								 riscv->registers[rd] = imm << 12;
+								 break;
+							 }
 		case 0x03: { // Load instructions 
 				   uint32_t imm = ((instruction & 0xfff00000) >> 20);
 				   uint32_t addr = r1 + imm;
