@@ -1,3 +1,5 @@
+⚠ Currently undergoing a substantial rewrite for better readability located [here](https://github.com/Joash09/riscv32-emu) ⚠ 
+
 # RISCV-Emulator
 
 When first Googling "RISC-V emulator," it was this project that inspired me to try make my own: 
